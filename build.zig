@@ -83,6 +83,15 @@ pub fn build(b: *std.Build) void {
         }),
     });
 
+    const libgit2 = b.dependency("libgit2", .{
+        .target = target,
+        .optimize = optimize,
+        .@"enable-ssh" = true, // optional ssh support via libssh2
+        // .@"tls-backend" = .openssl, // use openssl instead of mbedtls
+    });
+
+    exe.linkLibrary(libgit2.artifact("git2"));
+
     // This declares intent for the executable to be installed into the
     // install prefix when running `zig build` (i.e. when executing the default
     // step). By default the install prefix is `zig-out/` but can be overridden

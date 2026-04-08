@@ -5,6 +5,29 @@ pub fn main() !void {
     // Prints to stderr, ignoring potential errors.
     std.debug.print("All your {s} are belong to us.\n", .{"codebase"});
     try gitvibe.bufferedPrint();
+
+    const git = @cImport({
+        @cInclude("git2.h");
+    });
+
+    _ = git.git_libgit2_init();
+
+    var out: ?*git.git_repository = null;
+
+    const res = git.git_repository_open(@ptrCast(&out), "/Users/artem/projects/gitvibe");
+
+    std.debug.print("Repository open result: {d}\n", .{res});
+
+    if (res == 0) {
+        if (out) |repo| {
+            std.debug.print("Repository opened successfully!\n", .{});
+            git.git_repository_free(repo);
+        }
+    } else {
+        std.debug.print("Failed to open repository. Error code: {d}\n", .{res});
+    }
+
+    _ = git.git_libgit2_shutdown();
 }
 
 test "simple test" {
